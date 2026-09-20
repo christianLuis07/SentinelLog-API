@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SentinelLog.Api/SentinelLog.Api.csproj" />
+    <Project Path="src/SentinelLog.Application/SentinelLog.Application.csproj" />
+    <Project Path="src/SentinelLog.Domain/SentinelLog.Domain.csproj" />
+    <Project Path="src/SentinelLog.Infrastructure/SentinelLog.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SentinelLog.IntegrationTests/SentinelLog.IntegrationTests.csproj" />
+    <Project Path="tests/SentinelLog.UnitTests/SentinelLog.UnitTests.csproj" />
+  </Folder>
+</Solution>

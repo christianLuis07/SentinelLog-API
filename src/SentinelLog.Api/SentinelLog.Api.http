@@ -1,0 +1,179 @@
+@SentinelLog.Api_HostAddress = http://localhost:8080
+
+### 1. Health Check
+GET {{SentinelLog.Api_HostAddress}}/health
+Accept: application/json
+
+###
+
+### 2. Register New User (Default Viewer Role)
+POST {{SentinelLog.Api_HostAddress}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "student_researcher",
+  "email": "student@sentinellog.local",
+  "password": "StrongPassword123!#"
+}
+
+###
+
+### 3. Login as Admin (Seed Account)
+# @name adminLogin
+POST {{SentinelLog.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "password": "Admin123!#Sentinel"
+}
+
+###
+
+@adminToken = {{adminLogin.response.body.token}}
+
+### 4. Login as Security Analyst (Seed Account)
+# @name analystLogin
+POST {{SentinelLog.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "analyst",
+  "password": "Analyst123!#Sentinel"
+}
+
+###
+
+@analystToken = {{analystLogin.response.body.token}}
+
+### 5. Login as Service Agent (Seed Account)
+# @name serviceLogin
+POST {{SentinelLog.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "service-agent",
+  "password": "Service123!#Sentinel"
+}
+
+###
+
+@serviceToken = {{serviceLogin.response.body.token}}
+
+### 6. Get Current User Profile (Admin)
+GET {{SentinelLog.Api_HostAddress}}/api/v1/auth/me
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+###
+
+### 7. Ingest Security Event (Service Agent or Analyst)
+# @name ingestEvent
+POST {{SentinelLog.Api_HostAddress}}/api/v1/events
+Authorization: Bearer {{serviceToken}}
+Content-Type: application/json
+X-Correlation-ID: sentinel-trace-demo-1001
+
+{
+  "eventType": "UnauthorizedAccessAttempt",
+  "severity": "High",
+  "source": "waf-edge-router",
+  "actorId": 1,
+  "ipAddress": "198.51.100.77",
+  "userAgent": "AutomatedScanner/2.4",
+  "resource": "/api/v1/admin/debug",
+  "description": "Port scanning probe directed against administrative route.",
+  "timestamp": "2026-09-20T12:30:00Z",
+  "metadata": {
+    "protocol": "HTTP/2",
+    "blocked": true,
+    "firewallRuleId": "RULE_BLOCK_PRIVILEGED_PROBE"
+  }
+}
+
+###
+
+@createdEventId = {{ingestEvent.response.body.id}}
+
+### 8. Retrieve Paginated Security Events (With Filters & Whitelisted Sorting)
+GET {{SentinelLog.Api_HostAddress}}/api/v1/events?severity=High&page=1&pageSize=10&sortBy=timestamp&sortDirection=desc
+Authorization: Bearer {{analystToken}}
+Accept: application/json
+
+###
+
+### 9. Search Security Events by Keyword
+GET {{SentinelLog.Api_HostAddress}}/api/v1/events?search=scanning&page=1&pageSize=10
+Authorization: Bearer {{analystToken}}
+Accept: application/json
+
+###
+
+### 10. Get Security Event Details By ID
+GET {{SentinelLog.Api_HostAddress}}/api/v1/events/{{createdEventId}}
+Authorization: Bearer {{analystToken}}
+Accept: application/json
+
+###
+
+### 11. Get Aggregated Security Event Statistics
+GET {{SentinelLog.Api_HostAddress}}/api/v1/events/statistics
+Authorization: Bearer {{analystToken}}
+Accept: application/json
+
+###
+
+### 12. Get Daily Security Event Timeline Breakdown
+GET {{SentinelLog.Api_HostAddress}}/api/v1/events/timeline
+Authorization: Bearer {{analystToken}}
+Accept: application/json
+
+###
+
+### 13. Query Immutable Audit Logs (Admin / Analyst Only)
+GET {{SentinelLog.Api_HostAddress}}/api/v1/audit-logs?page=1&pageSize=20&sortDirection=desc
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+###
+
+### 14. Get Audit Log by ID
+GET {{SentinelLog.Api_HostAddress}}/api/v1/audit-logs/1
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+###
+
+### 15. User Management: List System Users (Admin Only)
+GET {{SentinelLog.Api_HostAddress}}/api/v1/users?page=1&pageSize=20
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+###
+
+### 16. User Management: Get User Details by ID (Admin Only)
+GET {{SentinelLog.Api_HostAddress}}/api/v1/users/4
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+###
+
+### 17. User Management: Deactivate User Account (Admin Only)
+PATCH {{SentinelLog.Api_HostAddress}}/api/v1/users/4/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+
+###
+
+### 18. User Management: Update User Security Role (Admin Only)
+PATCH {{SentinelLog.Api_HostAddress}}/api/v1/users/4/role
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "role": 2
+}

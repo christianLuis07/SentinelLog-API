@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentinellog-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE:-sentinellog}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DATABASE:-sentinellog}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sentinellog-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentinellog-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DATABASE:-sentinellog};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};
+      - Jwt__Secret=${JWT_SECRET:-SentinelLogSecureDevSecretKeyForJwtSigningMustBeAtLeast32BytesLong!}
+      - Jwt__Issuer=${JWT_ISSUER:-SentinelLog}
+      - Jwt__Audience=${JWT_AUDIENCE:-SentinelLog.Client}
+      - Jwt__ExpirationMinutes=60
+      - RateLimiting__LoginPermitLimit=5
+      - RateLimiting__RegisterPermitLimit=10
+      - RateLimiting__EventsPermitLimit=60
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+
+volumes:
+  postgres_data:

@@ -1,0 +1,24 @@
+# Visual Studio / .NET Build Artifacts
+**/[Bb]in/
+**/[Oo]bj/
+**/.vs/
+**/.vscode/
+**/[Tt]est[Rr]esults/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Environment & Secret files
+.env
+*.env
+!*.env.example
+appsettings*.secrets.json
+
+# Application Logs
+**/logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

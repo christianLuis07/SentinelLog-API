@@ -1,0 +1,16 @@
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/TestResults
+**/*.user
+**/*.suo
+**/logs
+Dockerfile
+docker-compose*.yml
+.env
+.env.example
+README.md
+tests/

@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <CompileUsingReferenceAssemblies Condition="'$(DesignTimeBuild)' == 'true'">false</CompileUsingReferenceAssemblies>
   </PropertyGroup>
 
   <ItemGroup>

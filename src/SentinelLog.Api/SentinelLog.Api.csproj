@@ -26,4 +26,8 @@
     <ProjectReference Include="..\SentinelLog.Application\SentinelLog.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SentinelLog.IntegrationTests" />
+  </ItemGroup>
+
 </Project>

@@ -117,3 +117,8 @@ finally
 }
 
 public partial class Program { }
+
+namespace SentinelLog.Api
+{
+    public class Program { }
+}

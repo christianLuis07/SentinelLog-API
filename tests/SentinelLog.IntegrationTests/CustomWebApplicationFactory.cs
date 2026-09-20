@@ -2,13 +2,14 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using SentinelLog.Api;
 using SentinelLog.Application.Interfaces;
 using SentinelLog.Domain.Entities;
 using SentinelLog.Domain.Enums;
 
 namespace SentinelLog.IntegrationTests;
 
-public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+public class CustomWebApplicationFactory : WebApplicationFactory<ApiMarker>
 {
     private static readonly string TestDbName = "TestDb_" + Guid.NewGuid().ToString("N");
 
